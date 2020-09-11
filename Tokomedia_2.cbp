@@ -13,7 +13,11 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add directory="C:/Program Files (x86)/Dev-Cpp/MinGW64/include" />
 				</Compiler>
+				<Linker>
+					<Add library="C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/libmysql.a" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/Tokomedia_2" prefix_auto="1" extension_auto="1" />
@@ -32,7 +36,40 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="config/connectDatabase.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="display/displayEmail.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="env.h">
+			<Option target="Debug" />
+		</Unit>
 		<Unit filename="main.cpp" />
+		<Unit filename="migration/migrateDatabase.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="model/modelEmail.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="model/modelEmailInbox.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="model/modelEmailSent.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="service/serviceEmail.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="tools/hasherTools.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="tools/sha256.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="tools/sha256.h">
+			<Option target="Debug" />
+		</Unit>
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

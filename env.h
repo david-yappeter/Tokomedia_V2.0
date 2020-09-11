@@ -11,6 +11,8 @@ class Environment{
         string UserGetPassword();
         string UserGetDatabaseName();
         string UserGetEmailTableName();
+        string UserGetEmailInboxTableName();
+        string UserGetEmailSentTableName();
 
     private :
         const string ip_address = "localhost";
@@ -18,6 +20,8 @@ class Environment{
         const string password = "";
         const string database_name = "tokomedia_sql";
         const string email_table_name = "email";
+        const string email_inbox_table_name = "email_inbox";
+        const string email_sent_table_name = "email_sent";
 };
 
 string Environment::UserGetIPAddress() {
@@ -38,6 +42,14 @@ string Environment::UserGetDatabaseName() {
 
 string Environment::UserGetEmailTableName() {
     return email_table_name;
+}
+
+string Environment::UserGetEmailInboxTableName() {
+    return email_inbox_table_name;
+}
+
+string Environment::UserGetEmailSentTableName() {
+    return email_sent_table_name;
 }
 
 #endif // ENVIRONMENT_PARAM

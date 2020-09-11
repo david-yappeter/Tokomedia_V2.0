@@ -1,7 +1,5 @@
-//#ifndef CONFIG_PARAM
-//#define CONFIG_PARAM 1
-//#endif // CONFIG_PARAM
-
+#ifndef CONFIG_PARAM
+#define CONFIG_PARAM 1
 #include<iostream>
 #include<windows.h>
 #include<mysql.h>
@@ -23,3 +21,5 @@ MYSQL* ConnectDatabase(){
 
     return conn;
 }
+
+#endif // CONFIG_PARAM
