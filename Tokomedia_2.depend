@@ -1,0 +1,77 @@
+# depslib dependency file v1.0
+1599791706 source:e:\projek\tokomedia_2\main.cpp
+	<iostream>
+	<windows.h>
+	<mysql.h>
+	"tools/sha256.h"
+
+1476096933 c:\program files (x86)\dev-cpp\mingw64\include\mysql.h
+	<sys/types.h>
+	<winsock.h>
+	"mysql_com.h"
+	"mysql_time.h"
+	"mysql_version.h"
+	"typelib.h"
+	"my_list.h"
+	"my_alloc.h"
+
+1476096946 c:\program files (x86)\dev-cpp\mingw64\include\mysql_com.h
+
+1476096972 c:\program files (x86)\dev-cpp\mingw64\include\mysql_time.h
+
+1476096983 c:\program files (x86)\dev-cpp\mingw64\include\mysql_version.h
+	<custom_conf.h>
+
+1476097123 c:\program files (x86)\dev-cpp\mingw64\include\typelib.h
+
+1476097168 c:\program files (x86)\dev-cpp\mingw64\include\my_list.h
+
+1476097177 c:\program files (x86)\dev-cpp\mingw64\include\my_alloc.h
+
+1599789311 e:\projek\tokomedia_2\config\connectdatabase.h
+	<iostream>
+	<windows.h>
+	<mysql.h>
+	"../env.h"
+
+1599789447 e:\projek\tokomedia_2\env.h
+	<iostream>
+	<string>
+
+1533828250 source:e:\projek\tokomedia_2\tools\digest.cpp
+	"crc32.h"
+	"md5.h"
+	"sha1.h"
+	"sha256.h"
+	"keccak.h"
+	"sha3.h"
+	<iostream>
+	<fstream>
+
+1533828250 e:\projek\tokomedia_2\tools\crc32.h
+	<string>
+	<stdint.h>
+
+1533828250 e:\projek\tokomedia_2\tools\md5.h
+	<string>
+	<stdint.h>
+
+1533828250 e:\projek\tokomedia_2\tools\sha1.h
+	<string>
+	<stdint.h>
+
+1533828250 e:\projek\tokomedia_2\tools\sha256.h
+	<string>
+	<stdint.h>
+
+1533828250 e:\projek\tokomedia_2\tools\keccak.h
+	<string>
+	<stdint.h>
+
+1533828250 e:\projek\tokomedia_2\tools\sha3.h
+	<string>
+	<stdint.h>
+
+1599791686 source:e:\projek\tokomedia_2\tools\sha256.cpp
+	"sha256.h"
+
