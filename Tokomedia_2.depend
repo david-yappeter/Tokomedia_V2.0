@@ -1,9 +1,14 @@
 # depslib dependency file v1.0
-1599791706 source:e:\projek\tokomedia_2\main.cpp
+1599879048 source:e:\projek\tokomedia_2\main.cpp
 	<iostream>
 	<windows.h>
 	<mysql.h>
-	"tools/sha256.h"
+	"tools/hasherTools.h"
+	"config/connectDatabase.h"
+	"migration/migrateDatabase.h"
+	"service/serviceEmail.h"
+	<stdlib.h>
+	<time.h>
 
 1476096933 c:\program files (x86)\dev-cpp\mingw64\include\mysql.h
 	<sys/types.h>
@@ -28,13 +33,13 @@
 
 1476097177 c:\program files (x86)\dev-cpp\mingw64\include\my_alloc.h
 
-1599789311 e:\projek\tokomedia_2\config\connectdatabase.h
+1599872509 e:\projek\tokomedia_2\config\connectdatabase.h
 	<iostream>
 	<windows.h>
 	<mysql.h>
 	"../env.h"
 
-1599789447 e:\projek\tokomedia_2\env.h
+1599878560 e:\projek\tokomedia_2\env.h
 	<iostream>
 	<string>
 
@@ -127,4 +132,49 @@
 1599839354 d:\projek\database_mysql\tokomedia_v2.0\model\modelemailsent.h
 	"modelEmail.h"
 	"modelEmailInbox.h"
+
+1599878934 e:\projek\tokomedia_2\tools\hashertools.h
+	<iostream>
+	"sha256.h"
+	"../env.h"
+
+1599872509 e:\projek\tokomedia_2\migration\migratedatabase.h
+	<iostream>
+	<windows.h>
+	<mysql.h>
+	<sstream>
+	"../config/connectDatabase.h"
+
+1599879011 e:\projek\tokomedia_2\service\serviceemail.h
+	<iostream>
+	<sstream>
+	<windows.h>
+	<mysql.h>
+	"serviceEmailSent.h"
+	"../env.h"
+	"../config/connectDatabase.h"
+	"../model/modelEmail.h"
+	"../tools/hasherTools.h"
+
+1599872509 e:\projek\tokomedia_2\model\modelemail.h
+	"modelEmailInbox.h"
+	"modelEmailSent.h"
+
+1599872509 e:\projek\tokomedia_2\model\modelemailinbox.h
+	"modelEmail.h"
+	"modelEmailSent.h"
+
+1599872509 e:\projek\tokomedia_2\model\modelemailsent.h
+	"modelEmail.h"
+	"modelEmailInbox.h"
+
+1599879020 e:\projek\tokomedia_2\service\serviceemailsent.h
+	<iostream>
+	<sstream>
+	<windows.h>
+	<mysql.h>
+	"../env.h"
+	"../config/connectDatabase.h"
+	"../model/modelEmail.h"
+	"serviceEmail.h"
 

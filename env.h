@@ -2,6 +2,7 @@
 #define ENVIRONMENT_PARAM 1
 #include<iostream>
 #include<string>
+//#include<stdio.h>
 using namespace std;
 
 class Environment{
@@ -14,7 +15,11 @@ class Environment{
         string UserGetEmailInboxTableName();
         string UserGetEmailSentTableName();
 
+        string UserGetSalt();
+
     private :
+        const string salt = "saltThisThlngs";
+
         const string ip_address = "localhost";
         const string username = "root";
         const string password = "";
@@ -50,6 +55,10 @@ string Environment::UserGetEmailInboxTableName() {
 
 string Environment::UserGetEmailSentTableName() {
     return email_sent_table_name;
+}
+
+string Environment::UserGetSalt() {
+    return salt;
 }
 
 #endif // ENVIRONMENT_PARAM
