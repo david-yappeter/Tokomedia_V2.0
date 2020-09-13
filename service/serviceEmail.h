@@ -4,6 +4,7 @@
 #include<sstream>
 #include<windows.h>
 #include<mysql.h>
+#include<vector>
 #include"serviceEmailSent.h"
 #include"../env.h"
 #include"../config/connectDatabase.h"
@@ -25,6 +26,8 @@ bool ServiceCreateEmail(struct NewEmail input) {
 
     Environment env;
     stringstream ss;
+
+    input.email = ToLower(input.email);
 
     input.password = sha256Hashing(input.password);
 
@@ -101,41 +104,139 @@ bool ServiceDeleteEmail(int id) {
     }
 }
 
-//(struct Email) ServiceGetEmailByID() {
-//    MYSQL *conn = ConnectDatabase();
-//        struct Email temp;
-//
-//    if(!conn){
-//        mysql_close(conn);
-//        return temp;
-//    }
-//
-//    Environment env;
-//    stringstream ss;
-//
-//    ss << "SELECT * FROM " << env.UserGetEmailTableName() << " WHERE id = " << id << ";";
-//
-//    string query = ss.str();
-//    const char *q = query.c_str();
-//
-//    int q_state = 0;
-//    q_state = mysql_query(conn, q);
-//
-//    if(!q_state){
-//        MYSQL_RES *res = mysql_store_result(conn);
-//        MYSQL_ROW row;
-//
-//        row = mysql_fetch_row(res);
-//
-//        temp.id = temp
-//
-//        mysql_close(conn);
-//        return temp;
-//    }
-//    else{
-//        mysql_close(conn);
-//        return temp;
-//    }
-//}
+vector<struct Email> ServiceGetEmailByID(int id) {
+    MYSQL *conn = ConnectDatabase();
+    vector<struct Email> temp;
+
+    if(!conn){
+        mysql_close(conn);
+        return temp;
+    }
+
+    Environment env;
+    stringstream ss;
+
+    ss << "SELECT * FROM " << env.UserGetEmailTableName() << " WHERE id = " << id << ";";
+
+    string query = ss.str();
+    const char *q = query.c_str();
+
+    int q_state = 0;
+    q_state = mysql_query(conn, q);
+
+    if(!q_state){
+        MYSQL_RES *res = mysql_store_result(conn);
+        MYSQL_ROW row;
+
+        while(row = mysql_fetch_row(res)){
+            struct Email emailTemp;
+            emailTemp.id = atoi(row[0]);
+            emailTemp.name = row[1];
+            emailTemp.password = row[2];
+            emailTemp.email = row[3];
+            emailTemp.created_at = row[4];
+            emailTemp.last_login = row[5];
+
+            temp.push_back(emailTemp);
+        }
+
+        mysql_close(conn);
+        return temp;
+    }
+    else{
+        mysql_close(conn);
+        return temp;
+    }
+}
+
+vector<struct Email> ServiceGetEmailByEmail(string email){
+    MYSQL *conn = ConnectDatabase();
+    vector<struct Email> temp;
+
+    if(!conn){
+        mysql_close(conn);
+        return temp;
+    }
+
+    Environment env;
+    stringstream ss;
+
+    ss << "SELECT * FROM " << env.UserGetEmailTableName() << " WHERE email = '" << email << "';";
+
+    string query = ss.str();
+    const char *q = query.c_str();
+
+    int q_state = 0;
+    q_state = mysql_query(conn, q);
+
+    if(!q_state){
+        MYSQL_RES *res = mysql_store_result(conn);
+        MYSQL_ROW row;
+
+        while(row = mysql_fetch_row(res)){
+            struct Email emailTemp;
+            emailTemp.id = atoi(row[0]);
+            emailTemp.name = row[1];
+            emailTemp.password = row[2];
+            emailTemp.email = row[3];
+            emailTemp.created_at = row[4];
+            emailTemp.last_login = row[5];
+
+            temp.push_back(emailTemp);
+        }
+
+        mysql_close(conn);
+        return temp;
+    }
+    else{
+        mysql_close(conn);
+        return temp;
+    }
+}
+
+vector<struct Email> ServiceGetEmailAll() {
+    MYSQL *conn = ConnectDatabase();
+    vector<struct Email> temp;
+
+    if(!conn){
+        mysql_close(conn);
+        return temp;
+    }
+
+    Environment env;
+    stringstream ss;
+
+    ss << "SELECT * FROM " << env.UserGetEmailTableName() << ";";
+
+    string query = ss.str();
+    const char *q = query.c_str();
+
+    int q_state = 0;
+    q_state = mysql_query(conn, q);
+
+    if(!q_state){
+        MYSQL_RES *res = mysql_store_result(conn);
+        MYSQL_ROW row;
+
+        while(row = mysql_fetch_row(res)){
+            struct Email emailTemp;
+            emailTemp.id = atoi(row[0]);
+            emailTemp.name = row[1];
+            emailTemp.password = row[2];
+            emailTemp.email = row[3];
+            emailTemp.created_at = row[4];
+            emailTemp.last_login = row[5];
+
+            temp.push_back(emailTemp);
+        }
+
+        mysql_close(conn);
+        return temp;
+    }
+    else{
+        mysql_close(conn);
+        return temp;
+    }
+}
 
 #endif // SERVICE_PARAM

@@ -64,6 +64,12 @@
 		<Unit filename="service/serviceEmailSent.h">
 			<Option target="Debug" />
 		</Unit>
+		<Unit filename="start/startProgram.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="tools/cursorTools.h">
+			<Option target="Debug" />
+		</Unit>
 		<Unit filename="tools/hasherTools.h">
 			<Option target="Debug" />
 		</Unit>
@@ -71,6 +77,9 @@
 			<Option target="Debug" />
 		</Unit>
 		<Unit filename="tools/sha256.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="tools/timeTools.h">
 			<Option target="Debug" />
 		</Unit>
 		<Extensions>
