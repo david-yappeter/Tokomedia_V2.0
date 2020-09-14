@@ -5,7 +5,6 @@
 
 struct EmailSent {
     int id;
-    string name;
     string receiver_name;
     string subject;
     string description;
@@ -15,7 +14,6 @@ struct EmailSent {
 };
 
 struct NewEmailSent {
-    string name;
     string receiver_name;
     string subject;
     string description;
@@ -26,7 +24,6 @@ struct NewEmailSent {
 
 struct UpdateEmailSent {
     int id;
-    string name;
     string receiver_name;
     string subject;
     string description;

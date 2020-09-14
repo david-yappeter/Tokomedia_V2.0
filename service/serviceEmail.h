@@ -6,6 +6,7 @@
 #include<mysql.h>
 #include<vector>
 #include"serviceEmailSent.h"
+#include"serviceEmailInbox.h"
 #include"../env.h"
 #include"../config/connectDatabase.h"
 #include"../model/modelEmail.h"

@@ -23,6 +23,7 @@
 #define KEY_LEFT 75
 #define KEY_RIGHT 77
 #define KEY_ENTER 13
+#define KEY_BACKSPACE 8
 using namespace std;
 
 // Email Display Function
@@ -30,16 +31,18 @@ void EmailMainMenu();
 void EmailLoginMenu();
 void EmailRegisterMenu();
 void EmailDashboard();
-void EmailInbox();
+void EmailInboxDescription(struct EmailInbox);
 void EmailSent();
+void EmailSentDescription(struct EmailSent);
 void EmailArchive();
-void EmailDesc();
 
 // Misc
 void PrintHeader();
 
 // Global Variable
 struct Email login_now;
+int dashboard_page_now = 1;
+int archived_email_inbox_page_now = 1;
 
 char gmailSymbol[15][100] = {
 "00111111110000000000000001111110000000000000000000000000000",//1
@@ -282,9 +285,18 @@ void EmailLoginMenu() {
                 continue;
 			}
 			if(temp[index] == 32){
+                if(inputan == 1){
+                    continue;
+                }
 				SetCursorPosition(default_position_x, default_position_y);
-                cout << " ";
+				if(inputan == 2){
+                    cout << "*";
+				}
+				else{
+                    cout << " ";
+				}
 				index++;
+                default_position_x++;
 				continue;
 			}
 			if(temp[index] == 8){
@@ -327,7 +339,17 @@ void EmailLoginMenu() {
 
 
         if(kbhit()){
-            // MAIN MENU
+            struct UpdateEmail update_email;
+            update_email.id = login_now.id;
+            update_email.name = login_now.name;
+            update_email.password = login_now.password;
+            update_email.email = login_now.email;
+            update_email.created_at = login_now.created_at;
+            update_email.last_login = GetTimeNow();
+
+            ServiceUpdateEmail(update_email);
+            getchar();
+            EmailDashboard();
             break;
         }
     }
@@ -427,9 +449,18 @@ void EmailRegisterMenu(){
                 continue;
 			}
 			if(temp[index] == 32){
+                if(inputan == 1){
+                    continue;
+                }
 				SetCursorPosition(default_position_x, default_position_y);
-                cout << " ";
+				if(inputan == 3){
+                    cout << "*";
+				}
+				else{
+                    cout << " ";
+				}
 				index++;
+                default_position_x++;
 				continue;
 			}
 			if(temp[index] == 8){
@@ -491,12 +522,351 @@ void EmailRegisterMenu(){
 void EmailDashboard() {
     PrintHeader();
 
+    SetCursorPosition(0,8);
+    cout << "Welcome, " << login_now.name << '\n';
+    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+
+    vector<struct EmailInbox> email_inbox = ServiceGetEmailInboxByUserID(login_now.id);
+
+    int size_email_inbox = email_inbox.size();
+    string email_inbox_counter = to_string(size_email_inbox);
+
+    string email_count_text = email_inbox_counter + " Email";
+    if(size_email_inbox > 1){
+        email_count_text += "s";
+    }
+    email_count_text += " In Your Inbox";
+
+    int count_temp_pos = 58;
+    for(int i = email_count_text.length() - 1; i >= 0; i--){
+        SetCursorPosition(count_temp_pos, 8);
+        cout << email_count_text[i];
+        count_temp_pos--;
+    }
+
+    int max_pagination_page;
+    if(size_email_inbox % 15 == 0){
+        max_pagination_page = size_email_inbox / 15;
+    }
+    else{
+        max_pagination_page = size_email_inbox / 15 + 1;
+    }
+
+    SetCursorPosition(7,10);
+    cout << "Sender\tSubject\t\t\tSent At";
+
+    SetCursorPosition(0, 11);
+    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+
+    int inbox_y = 12;
+    int temp_y = inbox_y;
+
+    for(int i = inbox_y; i < temp_y + size_email_inbox; i++){
+        SetCursorPosition(5,inbox_y);
+        if(email_inbox[i - temp_y].read_status == 2){
+            cout << char(254) << " ";
+        }
+        else{
+            cout << "  ";
+        }
+        cout << email_inbox[i - temp_y].sender_name << '\t' << email_inbox[i - temp_y].subject << "\t\t" << email_inbox[i - temp_y].sent_at << '\n';
+        inbox_y++;
+    }
+
+    SetCursorPosition(0, inbox_y + 1);
+    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+    SetCursorPosition(27, inbox_y + 2);
+    cout << dashboard_page_now << "/" << max_pagination_page;
+
+    int selected_email_inbox;
+    int range_min, range_max;
+    int flag = 0;
+    if(size_email_inbox > 0){
+        selected_email_inbox = (dashboard_page_now - 1) * 15 + 1;
+        SetCursorPosition(2, temp_y);
+        cout << ">>";
+
+        range_min = (dashboard_page_now - 1) * 15 + 1;
+        if(dashboard_page_now != max_pagination_page){
+            range_max = range_min + 14;
+        }
+        else{
+            range_max = size_email_inbox;
+        }
+        flag = 1;
+    }
+    else{
+        selected_email_inbox = 0;
+        SetCursorPosition(5, temp_y);
+        cout << "Inbox Empty";
+    }
+
     while(1){
         SetCursorVisible(false);
         SetCursorPosition(0,7);
         time_t tempTime;
         time(&tempTime);
         cout << ctime(&tempTime);
+
+        if(kbhit()){
+            char c = getch();
+
+            if(flag){
+                if(c == KEY_ENTER){
+                    EmailInboxDescription(email_inbox[selected_email_inbox - 1]);
+                }
+                else if(c == KEY_UP){
+                    if(selected_email_inbox == range_min){
+                        continue;
+                    }
+                    SetCursorPosition(2, temp_y);
+                    cout << "  ";
+                    temp_y--;
+                    selected_email_inbox--;
+                    SetCursorPosition(2, temp_y);
+                    cout << ">>";
+                }
+                else if(c == KEY_DOWN){
+                    if(selected_email_inbox == range_max){
+                        continue;
+                    }
+                    SetCursorPosition(2, temp_y);
+                    cout << "  ";
+                    temp_y++;
+                    selected_email_inbox++;
+                    SetCursorPosition(2, temp_y);
+                    cout << ">>";
+                }
+                else if(c == KEY_LEFT){
+                    if(dashboard_page_now == 1){
+                        continue;
+                    }
+                    dashboard_page_now--;
+                    EmailDashboard();
+                }
+                else if(c == KEY_RIGHT){
+                    if(dashboard_page_now == max_pagination_page){
+                        continue;
+                    }
+                    dashboard_page_now++;
+                    EmailDashboard();
+                }
+                else if(c == 'A' || c == 'a'){
+                    EmailArchive();
+                }
+                else if(c == 'R' || c == 'r'){
+                    struct UpdateEmailInbox update_email_inbox;
+                    update_email_inbox.id = email_inbox[selected_email_inbox - 1].id;
+                    update_email_inbox.sender_name = email_inbox[selected_email_inbox - 1].sender_name;
+                    update_email_inbox.subject = email_inbox[selected_email_inbox - 1].subject;
+                    update_email_inbox.description = email_inbox[selected_email_inbox - 1].description;
+                    update_email_inbox.available = 2;
+                    update_email_inbox.read_status = email_inbox[selected_email_inbox - 1].read_status;
+                    update_email_inbox.sent_at = email_inbox[selected_email_inbox - 1].sent_at;
+                    update_email_inbox.receiver_email_id = email_inbox[selected_email_inbox - 1].receiver_email_id;
+                    ServiceUpdateEmailInbox(update_email_inbox);
+                    EmailDashboard();
+                }
+            }
+            else{
+                if(c == 'A' || c == 'a'){
+                    EmailArchive();
+                }
+                else if(c == '0' || c == KEY_BACKSPACE){
+                    system("@cls||clear");
+                    cout << "Logging Out . . . .\n";
+                    cout << "Press Any Enter To Continue\n";
+                    getchar();
+                    dashboard_page_now = 1;
+                    archived_email_inbox_page_now = 1;
+                    EmailMainMenu();
+                }
+            }
+        }
+    }
+
+
+}
+
+void EmailInboxDescription(struct EmailInbox input) {
+    PrintHeader();
+
+    struct UpdateEmailInbox update_email_inbox;
+    update_email_inbox.id = input.id;
+    update_email_inbox.description = input.description;
+    update_email_inbox.receiver_email_id = input.receiver_email_id;
+    update_email_inbox.sender_name = input.sender_name;
+    update_email_inbox.sent_at = input.sent_at;
+    update_email_inbox.subject = input.subject;
+    update_email_inbox.available = input.available;
+    update_email_inbox.read_status = 1;
+
+    SetCursorPosition(20,20);
+    cout << ServiceUpdateEmailInbox(update_email_inbox);
+
+    SetCursorPosition(0,8);
+    cout << "Sender : " << input.sender_name << " at " << input.sent_at << '\n';
+    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+    cout << "\nSubject : " << input.subject << "\n\n";
+    cout << input.description << '\n';
+    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+
+    while(1){
+        SetCursorVisible(false);
+        SetCursorPosition(0,7);
+        time_t tempTime;
+        time(&tempTime);
+        cout << ctime(&tempTime);
+
+        if(kbhit()){
+            char c = getch();
+
+            if(c == KEY_BACKSPACE || c == '0'){
+                EmailDashboard();
+                break;
+            }
+        }
+    }
+}
+
+void EmailArchive() {
+    PrintHeader();
+
+    vector<struct EmailInbox> archived_email  = ServiceGetArchivedEmailInboxByUserID(login_now.id);
+    int archived_count = archived_email.size();
+
+    SetCursorPosition(0,8);
+    cout << "You have " << archived_count << " Archived Email(s)"<< '\n';
+    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+
+    SetCursorPosition(7,10);
+    cout << "Sender\tSubject\t\t\tSent At";
+
+    SetCursorPosition(0, 11);
+    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+
+    int inbox_y = 12;
+    int temp_y = inbox_y;
+
+    int max_pagination_page;
+    if(archived_count % 15 == 0){
+        max_pagination_page = archived_count / 15;
+    }
+    else{
+        max_pagination_page = archived_count / 15 + 1;
+    }
+
+    for(int i = inbox_y; i < temp_y + archived_count; i++){
+        SetCursorPosition(5,inbox_y);
+        cout << "  ";
+        cout << archived_email[i - temp_y].sender_name << '\t' << archived_email[i - temp_y].subject << "\t\t" << archived_email[i - temp_y].sent_at << '\n';
+        inbox_y++;
+    }
+
+    SetCursorPosition(0, inbox_y + 1);
+    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+    SetCursorPosition(27, inbox_y + 2);
+    cout << archived_email_inbox_page_now << "/" << max_pagination_page;
+
+    int selected_archived_email;
+    int range_min, range_max;
+    int flag = 0;
+    if(archived_count > 0){
+        selected_archived_email = (archived_email_inbox_page_now - 1) * 15 + 1;
+        SetCursorPosition(2, temp_y);
+        cout << ">>";
+
+        range_min = (archived_email_inbox_page_now - 1) * 15 + 1;
+        if(archived_email_inbox_page_now != max_pagination_page){
+            range_max = range_min + 14;
+        }
+        else{
+            range_max = archived_count;
+        }
+        flag = 1;
+    }
+    else{
+        selected_archived_email = 0;
+        SetCursorPosition(5, temp_y);
+        cout << "Inbox Empty";
+    }
+
+    while(1){
+        SetCursorVisible(false);
+        SetCursorPosition(0,7);
+        time_t tempTime;
+        time(&tempTime);
+        cout << ctime(&tempTime);
+
+        if(kbhit()){
+            char c = getch();
+
+            if(flag){
+                if(c == 'R' || c == 'r'){
+                    struct UpdateEmailInbox update_email_inbox;
+                    update_email_inbox.id = archived_email[selected_archived_email - 1].id;
+                    update_email_inbox.sender_name = archived_email[selected_archived_email - 1].sender_name;
+                    update_email_inbox.subject = archived_email[selected_archived_email - 1].subject;
+                    update_email_inbox.description = archived_email[selected_archived_email - 1].description;
+                    update_email_inbox.available = 1;
+                    update_email_inbox.read_status = archived_email[selected_archived_email - 1].read_status;
+                    update_email_inbox.sent_at = archived_email[selected_archived_email - 1].sent_at;
+                    update_email_inbox.receiver_email_id = archived_email[selected_archived_email - 1].receiver_email_id;
+                    ServiceUpdateEmailInbox(update_email_inbox);
+                    EmailArchive();
+                }
+                else if(c == 'D' || c == 'd'){
+                    ServiceDeleteEmailInbox(archived_email[selected_archived_email - 1].id);
+                    EmailArchive();
+                }
+                else if(c == KEY_UP){
+                    if(selected_archived_email == range_min){
+                        continue;
+                    }
+                    SetCursorPosition(2, temp_y);
+                    cout << "  ";
+                    temp_y--;
+                    selected_archived_email--;
+                    SetCursorPosition(2, temp_y);
+                    cout << ">>";
+                }
+                else if(c == KEY_DOWN){
+                    if(selected_archived_email == range_max){
+                        continue;
+                    }
+                    SetCursorPosition(2, temp_y);
+                    cout << "  ";
+                    temp_y++;
+                    selected_archived_email++;
+                    SetCursorPosition(2, temp_y);
+                    cout << ">>";
+                }
+                else if(c == KEY_LEFT){
+                    if(dashboard_page_now == 1){
+                        continue;
+                    }
+                    dashboard_page_now--;
+                    EmailDashboard();
+                }
+                else if(c == KEY_RIGHT){
+                    if(dashboard_page_now == max_pagination_page){
+                        continue;
+                    }
+                    dashboard_page_now++;
+                    EmailDashboard();
+                }
+                else if(c == '0' || c == KEY_BACKSPACE){
+                    EmailDashboard();
+                    break;
+                }
+            }
+            else{
+                if(c == '0' || c == KEY_BACKSPACE){
+                    EmailDashboard();
+                    break;
+                }
+            }
+        }
 
     }
 

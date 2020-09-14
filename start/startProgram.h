@@ -45,6 +45,30 @@ void StartProgram()
 
     EmailMainMenu();
 
+//    string temp = GetTimeNow();
+
+//    struct NewEmailInbox a;
+//    a.available = 1;
+//    a.description = "sakofjreiwgj asdfi aifkjeiwfwfj";
+//    a.read_status = 2;
+//    a.receiver_email_id = 1;
+//    a.sender_name = "Tester";
+//    a.sent_at = temp;
+//    a.subject = "Testing 2";
+//
+//    cout << ServiceCreateEmailInbox(a) << '\n';
+
+//    struct NewEmailSent b;
+//
+//    b.available = 1;
+//    b.description = "sakofjreiwgj asdfi aifkjeiwfwfj";
+//    b.receiver_name = "David Yap";
+//    b.sender_email_id = 2;
+//    b.sent_at = temp;
+//    b.subject = "Testing 2";
+//
+//    cout << ServiceCreateEmailSent(b) << '\n';
+
 //    _setmode(_fileno(stdout), _O_U16TEXT);
 //
 //    wprintf(L"\x2665");

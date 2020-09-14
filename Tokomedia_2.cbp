@@ -61,6 +61,9 @@
 		<Unit filename="service/serviceEmail.h">
 			<Option target="Debug" />
 		</Unit>
+		<Unit filename="service/serviceEmailInbox.h">
+			<Option target="Debug" />
+		</Unit>
 		<Unit filename="service/serviceEmailSent.h">
 			<Option target="Debug" />
 		</Unit>
