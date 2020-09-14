@@ -46,26 +46,26 @@ void StartProgram()
     EmailMainMenu();
 
 //    string temp = GetTimeNow();
-
+//
 //    struct NewEmailInbox a;
 //    a.available = 1;
-//    a.description = "sakofjreiwgj asdfi aifkjeiwfwfj";
+//    a.description = "sgrethtrtgt rtgrts trg\n tori\nsaasdasa";
 //    a.read_status = 2;
 //    a.receiver_email_id = 1;
 //    a.sender_name = "Tester";
 //    a.sent_at = temp;
-//    a.subject = "Testing 2";
+//    a.subject = "Testing 3";
 //
 //    cout << ServiceCreateEmailInbox(a) << '\n';
-
+//
 //    struct NewEmailSent b;
 //
 //    b.available = 1;
-//    b.description = "sakofjreiwgj asdfi aifkjeiwfwfj";
+//    b.description = "sgrethtrtgt rtgrts trg\n tori\nsaasdasa";
 //    b.receiver_name = "David Yap";
 //    b.sender_email_id = 2;
 //    b.sent_at = temp;
-//    b.subject = "Testing 2";
+//    b.subject = "Testing 3";
 //
 //    cout << ServiceCreateEmailSent(b) << '\n';
 
@@ -74,5 +74,6 @@ void StartProgram()
 //    wprintf(L"\x2665");
 //
 //    _setmode(_fileno(stdout), _O_TEXT);
+
 }
 
