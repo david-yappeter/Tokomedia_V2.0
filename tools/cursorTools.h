@@ -5,6 +5,7 @@
 
 #include "hasherTools.h"
 #include "timeTools.h"
+#include "descriptionConverter.h"
 
 using namespace std;
 
