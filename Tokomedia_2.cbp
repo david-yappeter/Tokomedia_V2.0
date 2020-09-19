@@ -42,6 +42,9 @@
 		<Unit filename="display/displayEmail.h">
 			<Option target="Debug" />
 		</Unit>
+		<Unit filename="display/displayMain.h">
+			<Option target="Debug" />
+		</Unit>
 		<Unit filename="env.h">
 			<Option target="Debug" />
 		</Unit>

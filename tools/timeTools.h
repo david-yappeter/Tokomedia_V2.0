@@ -5,6 +5,7 @@
 #include<string>
 
 #include "hasherTools.h"
+#include "descriptionConverter.h"
 #include "cursorTools.h"
 using namespace std;
 

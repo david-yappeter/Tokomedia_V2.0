@@ -1,11 +1,12 @@
-#ifndef DISPLAY_PARAM_EMAIL
-#define DISPLAY_PARAM_EMAIL 1
+#ifndef DISPLAY_EMAIL_PARAM
+#define DISPLAY_EMAIL_PARAM 1
 #include<iostream>
 #include<string.h>
 #include<windows.h>
 
 #include "../tools/cursorTools.h"
 #include "../tools/timeTools.h"
+#include "displayMain.h"
 
 #define STAGE4 219
 #define STAGE3 178
@@ -36,9 +37,10 @@ void EmailInboxArchive();
 void EmailSentDashboard();
 void EmailSentDescription(struct EmailSent input);
 void EmailSentArchive();
+void EmailWriteMail();
 
 // Misc
-void PrintHeader();
+void PrintGmailHeader();
 
 // Global Variable
 struct Email login_now;
@@ -47,21 +49,21 @@ int archived_email_inbox_page_now = 1;
 int sent_dashboard_page_now = 1;
 int archived_email_sent_page_now = 1;
 
-char gmailSymbol[15][100] = {
-"00111111110000000000000001111110000000000000000000000000000",//1
-"01001111110011111011111001111001000000011110011110001111100",//2
-"10001001110100000111100101001001000001101111100101010000010",//3
-"1000011100100111001101101100100111000100111(001110)00101001",//4
-"011111110011111100(1111001111111110110111100111111111111001",//5
-"00000000110000001100000110000000000110000011000000000000110",//6
-"22222222222222222222222222222222222222222222222222222222222",//7
-"00000000000000000000000000000000000000000000000000000000000",//8
-"00000000000000000000000000000000000000000000000000000000000",//9
-"00000000000000000000000000LOGIN0000000000000000000000000000",// (18 19,10) (37 38,10)
-"00000000000000000000000000000000000000000000000000000000000",//11
-"0000000000000000000000000REGISTER00000000000000000000000000",// (X,12) (X2,12)
-"00000000000000000000000000000000000000000000000000000000000",//13
-"00000000000000000000000000RETURN000000000000000000000000000",//14
+char gmailSymbol[15][105] = {
+"0011111111000000000000000111111000000000000000000000000000000000000000000000000000000000000000000000",//1
+"0100111111001111101111100111100100000001111001111000111110000000000000000000000000000000000000000000",//2
+"1000100111010000011110010100100100000110111110010101000001000000000000000000000000000000000000000000",//3
+"1000011100100111001101101100100111000100111(001110)0010100100000000000000000000000000000000000000000",//4
+"011111110011111100(111100111111111011011110011111111111100100000000000000000000000000000000000000000",//5
+"0000000011000000110000011000000000011000001100000000000011000000000000000000000000000000000000000000",//6
+"2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222",//7
+"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",//8
+"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",//9
+"00000000000000000000000000LOGIN000000000000000000000000000000000000000000000000000000000000000000000",// (18 19,10) (37 38,10)
+"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",//11
+"0000000000000000000000000REGISTER0000000000000000000000000000000000000000000000000000000000000000000",// (X,12) (X2,12)
+"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",//13
+"00000000000000000000000000RETURN00000000000000000000000000000000000000000000000000000000000000000000",//14
 };
 
 void EmailMainMenu(){
@@ -87,8 +89,8 @@ void EmailMainMenu(){
     gmailSymbol[13][37] = ' ';
     gmailSymbol[13][38] = ' ';
 
-    #ifndef ONLY_ONCE
-    #define ONLY_ONCE
+    #ifndef ONLY_ONCE_GMAIL_LOGO
+    #define ONLY_ONCE_GMAIL_LOGO 1
         int len_x = strlen(gmailSymbol[0]);
 
         for(int i = 0; i < 15; i++){
@@ -178,7 +180,7 @@ void EmailMainMenu(){
 }
 
 void EmailLoginMenu() {
-    PrintHeader();
+    PrintGmailHeader();
 
     char temp[255];
     int index = 0;
@@ -217,6 +219,7 @@ void EmailLoginMenu() {
                     if(s == "0"){
                         cout << "Aborting Operation";
                         getchar();
+                        EmailMainMenu();
                         break;
                     }
                     vector<struct Email> AllEmail = ServiceGetEmailAll();
@@ -360,7 +363,7 @@ void EmailLoginMenu() {
 }
 
 void EmailRegisterMenu(){
-    PrintHeader();
+    PrintGmailHeader();
 
     struct NewEmail new_email;
     char temp[255];
@@ -389,7 +392,7 @@ void EmailRegisterMenu(){
         SetCursorPosition(default_position_x,default_position_y);
         if(kbhit()){
             temp[index] = getch();
-            if(temp[index] == 13){
+            if(temp[index] == KEY_ENTER){
 		    	if(index == 0){
                     continue;
 				}
@@ -524,11 +527,11 @@ void EmailRegisterMenu(){
 }
 
 void EmailInboxDashboard() {
-    PrintHeader();
+    PrintGmailHeader();
 
     SetCursorPosition(0,8);
     cout << "Welcome, " << login_now.name << '\n';
-    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+    for(int i = 0; i < 100; i++) cout << char(HORIZON_LINE);
 
     vector<struct EmailInbox> email_inbox = ServiceGetEmailInboxByUserID(login_now.id);
 
@@ -556,16 +559,33 @@ void EmailInboxDashboard() {
         max_pagination_page = size_email_inbox / 15 + 1;
     }
 
-    SetCursorPosition(7,10);
-    cout << "Sender\tSubject\t\t\tSent At";
+
+
+    SetCursorPosition(8,10);
+    cout << "Sender";
+    SetCursorPosition(28,10);
+    cout << "Subject";
+    SetCursorPosition(80,10);
+    cout << "Sent At";
 
     SetCursorPosition(0, 11);
-    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+    for(int i = 0; i < 100; i++) cout << char(HORIZON_LINE);
 
     int inbox_y = 12;
     int temp_y = inbox_y;
 
-    for(int i = inbox_y; i < temp_y + size_email_inbox; i++){
+    int item_counter_on_page;
+    if(max_pagination_page == 0){
+        item_counter_on_page = 0;
+    }
+    else if(inbox_dashboard_page_now != max_pagination_page){
+        item_counter_on_page = 15;
+    }
+    else{
+        item_counter_on_page = size_email_inbox - (inbox_dashboard_page_now - 1) * 15;
+    }
+
+    for(int i = inbox_y + (inbox_dashboard_page_now - 1) * 15; i < temp_y + (inbox_dashboard_page_now - 1) * 15 + item_counter_on_page; i++){
         SetCursorPosition(5,inbox_y);
         if(email_inbox[i - temp_y].read_status == 2){
             cout << char(254) << " ";
@@ -573,12 +593,29 @@ void EmailInboxDashboard() {
         else{
             cout << "  ";
         }
-        cout << email_inbox[i - temp_y].sender_name << '\t' << email_inbox[i - temp_y].subject << "\t\t" << email_inbox[i - temp_y].sent_at << '\n';
+
+        SetCursorPosition(8,inbox_y);
+        if(email_inbox[i - temp_y].sender_name.length() > 22){
+            cout << email_inbox[i - temp_y].sender_name.substr(0,22);
+        }
+        else{
+            cout << email_inbox[i - temp_y].sender_name;
+        }
+        SetCursorPosition(28,inbox_y);
+        if(email_inbox[i -temp_y].subject.length() > 45){
+            cout << email_inbox[i - temp_y].subject.substr(0,45) << "...";
+        }
+        else{
+            cout << email_inbox[i - temp_y].subject;
+        }
+        SetCursorPosition(80,inbox_y);
+        cout << email_inbox[i - temp_y].sent_at;
+
         inbox_y++;
     }
 
     SetCursorPosition(0, inbox_y + 1);
-    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+    for(int i = 0; i < 100; i++) cout << char(HORIZON_LINE);
     SetCursorPosition(27, inbox_y + 2);
     cout << inbox_dashboard_page_now << "/" << max_pagination_page;
 
@@ -675,6 +712,9 @@ void EmailInboxDashboard() {
                 else if(c == 'S' || c == 's'){
                     EmailSentDashboard();
                 }
+                else if(c == 'W' || c == 'w'){
+                    EmailWriteMail();
+                }
                 else if(c == '0' || c == KEY_BACKSPACE){
                     system("@cls||clear");
                     cout << "Logging Out . . . .\n";
@@ -698,6 +738,9 @@ void EmailInboxDashboard() {
                     archived_email_inbox_page_now = 1;
                     EmailMainMenu();
                 }
+                else if(c == 'W' || c == 'w'){
+                    EmailWriteMail();
+                }
                 else if(c == 'S' || c == 's'){
                     EmailSentDashboard();
                 }
@@ -709,7 +752,7 @@ void EmailInboxDashboard() {
 }
 
 void EmailInboxDescription(struct EmailInbox input) {
-    PrintHeader();
+    PrintGmailHeader();
 
     struct UpdateEmailInbox update_email_inbox;
     update_email_inbox.id = input.id;
@@ -725,10 +768,10 @@ void EmailInboxDescription(struct EmailInbox input) {
 
     SetCursorPosition(0,8);
     cout << "Sender : " << input.sender_name << " at " << input.sent_at << '\n';
-    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+    for(int i = 0; i < 100; i++) cout << char(HORIZON_LINE);
     cout << "\nSubject : " << input.subject << "\n\n";
-    cout << input.description << '\n';
-    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+    cout << descriptionConvert(input.description, 99) << '\n';
+    for(int i = 0; i < 100; i++) cout << char(HORIZON_LINE);
 
     while(1){
         SetCursorVisible(false);
@@ -749,20 +792,24 @@ void EmailInboxDescription(struct EmailInbox input) {
 }
 
 void EmailInboxArchive() {
-    PrintHeader();
+    PrintGmailHeader();
 
     vector<struct EmailInbox> archived_email  = ServiceGetArchivedEmailInboxByUserID(login_now.id);
     int archived_count = archived_email.size();
 
     SetCursorPosition(0,8);
     cout << "You have " << archived_count << " Archived Email(s)"<< '\n';
-    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+    for(int i = 0; i < 100; i++) cout << char(HORIZON_LINE);
 
-    SetCursorPosition(7,10);
-    cout << "Sender\tSubject\t\t\tSent At";
+    SetCursorPosition(8,10);
+    cout << "Sender";
+    SetCursorPosition(28,10);
+    cout << "Subject";
+    SetCursorPosition(80,10);
+    cout << "Sent At";
 
     SetCursorPosition(0, 11);
-    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+    for(int i = 0; i < 100; i++) cout << char(HORIZON_LINE);
 
     int inbox_y = 12;
     int temp_y = inbox_y;
@@ -775,15 +822,41 @@ void EmailInboxArchive() {
         max_pagination_page = archived_count / 15 + 1;
     }
 
-    for(int i = inbox_y; i < temp_y + archived_count; i++){
-        SetCursorPosition(5,inbox_y);
-        cout << "  ";
-        cout << archived_email[i - temp_y].sender_name << '\t' << archived_email[i - temp_y].subject << "\t\t" << archived_email[i - temp_y].sent_at << '\n';
+    int item_counter_on_page;
+    if(max_pagination_page == 0){
+        item_counter_on_page = 0;
+    }
+    else if(archived_email_inbox_page_now != max_pagination_page){
+        item_counter_on_page = 15;
+    }
+    else{
+        item_counter_on_page = archived_count - (archived_email_inbox_page_now - 1) * 15;
+    }
+
+    for(int i = inbox_y + (archived_email_inbox_page_now - 1) * 15; i < temp_y + (archived_email_inbox_page_now - 1) * 15 + item_counter_on_page; i++){
+
+        SetCursorPosition(8,inbox_y);
+        if(archived_email[i - temp_y].sender_name.length() > 22){
+            cout << archived_email[i - temp_y].sender_name.substr(0,22);
+        }
+        else{
+            cout << archived_email[i - temp_y].sender_name;
+        }
+        SetCursorPosition(28,inbox_y);
+        if(archived_email[i - temp_y].subject.length() > 45){
+            cout << archived_email[i - temp_y].subject.substr(0,45) << "...";
+        }
+        else{
+            cout << archived_email[i - temp_y].subject;
+        }
+        SetCursorPosition(80,inbox_y);
+        cout << archived_email[i - temp_y].sent_at;
+
         inbox_y++;
     }
 
     SetCursorPosition(0, inbox_y + 1);
-    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+    for(int i = 0; i < 100; i++) cout << char(HORIZON_LINE);
     SetCursorPosition(27, inbox_y + 2);
     cout << archived_email_inbox_page_now << "/" << max_pagination_page;
 
@@ -893,14 +966,14 @@ void EmailInboxArchive() {
 }
 
 void EmailSentDashboard() {
-    PrintHeader();
+    PrintGmailHeader();
 
     vector<struct EmailSent> email_sent = ServiceGetEmailSentByUserID(login_now.id);
     int email_sent_counter = email_sent.size();
 
     SetCursorPosition(0,8);
     cout << "You Have Sent " << email_sent_counter << " Email(s)\n";
-    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+    for(int i = 0; i < 100; i++) cout << char(HORIZON_LINE);
 
     int max_pagination_page;
     if(email_sent_counter % 15 == 0){
@@ -910,24 +983,54 @@ void EmailSentDashboard() {
         max_pagination_page = email_sent_counter / 15 + 1;
     }
 
-    SetCursorPosition(7,10);
-    cout << "Receiver\t\tSubject\t\t\tSent At";
+    SetCursorPosition(8,10);
+    cout << "Receiver";
+    SetCursorPosition(28,10);
+    cout << "Subject";
+    SetCursorPosition(80,10);
+    cout << "Sent At";
 
     SetCursorPosition(0, 11);
-    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+    for(int i = 0; i < 100; i++) cout << char(HORIZON_LINE);
 
     int inbox_y = 12;
     int temp_y = inbox_y;
 
-    for(int i = inbox_y; i < temp_y + email_sent_counter; i++){
-        SetCursorPosition(5,inbox_y);
-        cout << "  ";
-        cout << email_sent[i - temp_y].receiver_name << '\t' << email_sent[i - temp_y].subject << "\t\t" << email_sent[i - temp_y].sent_at << '\n';
+    int item_counter_on_page;
+    if(max_pagination_page == 0){
+        item_counter_on_page = 0;
+    }
+    else if(sent_dashboard_page_now != max_pagination_page){
+        item_counter_on_page = 15;
+    }
+    else{
+        item_counter_on_page = email_sent_counter - (sent_dashboard_page_now - 1) * 15;
+    }
+
+    for(int i = inbox_y + (sent_dashboard_page_now - 1) * 15; i < temp_y + (sent_dashboard_page_now - 1) * 15  + item_counter_on_page; i++){
+
+        SetCursorPosition(8,inbox_y);
+        if(email_sent[i - temp_y].receiver_name.length() > 22){
+            cout << email_sent[i - temp_y].receiver_name.substr(0,22);
+        }
+        else{
+            cout << email_sent[i - temp_y].receiver_name;
+        }
+        SetCursorPosition(28,inbox_y);
+        if(email_sent[i - temp_y].subject.length() > 45){
+            cout << email_sent[i - temp_y].subject.substr(0,45) << "...";
+        }
+        else{
+            cout <<email_sent[i - temp_y].subject;
+        }
+        SetCursorPosition(80,inbox_y);
+        cout << email_sent[i - temp_y].sent_at;
+
         inbox_y++;
     }
 
     SetCursorPosition(0, inbox_y + 1);
-    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+    for(int i = 0; i < 100; i++) cout << char(HORIZON_LINE);
     SetCursorPosition(27, inbox_y + 2);
     cout << sent_dashboard_page_now << "/" << max_pagination_page;
 
@@ -1045,14 +1148,14 @@ void EmailSentDashboard() {
 }
 
 void EmailSentDescription(struct EmailSent input){
-    PrintHeader();
+    PrintGmailHeader();
 
     SetCursorPosition(0,8);
     cout << "Receiver : " << input.receiver_name << " at " << input.sent_at << '\n';
-    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+    for(int i = 0; i < 100; i++) cout << char(HORIZON_LINE);
     cout << "\nSubject : " << input.subject << "\n\n";
-    cout << input.description << '\n';
-    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+    cout << descriptionConvert(input.description, 99)<< '\n';
+    for(int i = 0; i < 100; i++) cout << char(HORIZON_LINE);
 
     while(1){
         SetCursorVisible(false);
@@ -1074,14 +1177,14 @@ void EmailSentDescription(struct EmailSent input){
 }
 
 void EmailSentArchive() {
-    PrintHeader();
+    PrintGmailHeader();
 
-    vector<struct EmailSent> email_sent = ServiceGetArchivedEmailSentByUserID(login_now.id);
-    int email_archived_counter = email_sent.size();
+    vector<struct EmailSent> email_sent_archive = ServiceGetArchivedEmailSentByUserID(login_now.id);
+    int email_archived_counter = email_sent_archive.size();
 
     SetCursorPosition(0,8);
     cout << "You Have " << email_archived_counter << " Archived Email(s)\n";
-    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+    for(int i = 0; i < 100; i++) cout << char(HORIZON_LINE);
 
     int max_pagination_page;
     if(email_archived_counter % 15 == 0){
@@ -1091,30 +1194,61 @@ void EmailSentArchive() {
         max_pagination_page = email_archived_counter / 15 + 1;
     }
 
-    SetCursorPosition(7,10);
-    cout << "Receiver\t\tSubject\t\t\tSent At";
+    SetCursorPosition(8,10);
+    cout << "Receiver";
+    SetCursorPosition(28,10);
+    cout << "Subject";
+    SetCursorPosition(80,10);
+    cout << "Sent At";
 
     SetCursorPosition(0, 11);
-    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+    for(int i = 0; i < 100; i++) cout << char(HORIZON_LINE);
 
     int inbox_y = 12;
     int temp_y = inbox_y;
 
-    for(int i = inbox_y; i < temp_y + email_archived_counter; i++){
-        SetCursorPosition(5,inbox_y);
-        cout << "  ";
-        cout << email_sent[i - temp_y].receiver_name << '\t' << email_sent[i - temp_y].subject << "\t\t" << email_sent[i - temp_y].sent_at << '\n';
+    int item_counter_on_page;
+    if(max_pagination_page == 0){
+        item_counter_on_page = 0;
+    }
+    else if(archived_email_sent_page_now != max_pagination_page){
+        item_counter_on_page = 15;
+    }
+    else{
+        item_counter_on_page = email_archived_counter - (archived_email_sent_page_now - 1) * 15;
+    }
+
+    for(int i = inbox_y + (archived_email_sent_page_now - 1); i < temp_y + (archived_email_sent_page_now - 1) + item_counter_on_page; i++){
+
+        SetCursorPosition(8,inbox_y);
+        if(email_sent_archive[i - temp_y].receiver_name.length() > 22){
+            cout << email_sent_archive[i - temp_y].receiver_name.substr(0,22);
+        }
+        else{
+            cout << email_sent_archive[i - temp_y].receiver_name;
+        }
+        SetCursorPosition(28,inbox_y);
+        if(email_sent_archive[i - temp_y].subject.length() > 45){
+            cout << email_sent_archive[i - temp_y].subject.substr(0,45) << "...";
+        }
+        else{
+            cout << email_sent_archive[i - temp_y].subject;
+        }
+        SetCursorPosition(80,inbox_y);
+        cout << email_sent_archive[i - temp_y].sent_at;
+
         inbox_y++;
     }
 
     SetCursorPosition(0, inbox_y + 1);
-    for(int i = 0; i < 59; i++) cout << char(HORIZON_LINE);
+    for(int i = 0; i < 100; i++) cout << char(HORIZON_LINE);
     SetCursorPosition(27, inbox_y + 2);
     cout << archived_email_sent_page_now << "/" << max_pagination_page;
 
     int selected_email_sent;
     int range_min, range_max;
     int flag = 0;
+
     if(email_archived_counter > 0){
         selected_email_sent = (archived_email_sent_page_now - 1) * 15 + 1;
         SetCursorPosition(2, temp_y);
@@ -1184,18 +1318,18 @@ void EmailSentArchive() {
                 }
                 else if(c == 'R' || c == 'r'){
                     struct UpdateEmailSent update_email_sent;
-                    update_email_sent.id = email_sent[selected_email_sent - 1].id;
-                    update_email_sent.receiver_name = email_sent[selected_email_sent - 1].receiver_name;
-                    update_email_sent.subject = email_sent[selected_email_sent - 1].subject;
-                    update_email_sent.description = email_sent[selected_email_sent - 1].description;
+                    update_email_sent.id = email_sent_archive[selected_email_sent - 1].id;
+                    update_email_sent.receiver_name = email_sent_archive[selected_email_sent - 1].receiver_name;
+                    update_email_sent.subject = email_sent_archive[selected_email_sent - 1].subject;
+                    update_email_sent.description = email_sent_archive[selected_email_sent - 1].description;
                     update_email_sent.available = 1;
-                    update_email_sent.sent_at = email_sent[selected_email_sent - 1].sent_at;
-                    update_email_sent.sender_email_id = email_sent[selected_email_sent - 1].sender_email_id;
+                    update_email_sent.sent_at = email_sent_archive[selected_email_sent - 1].sent_at;
+                    update_email_sent.sender_email_id = email_sent_archive[selected_email_sent - 1].sender_email_id;
                     ServiceUpdateEmailSent(update_email_sent);
                     EmailSentArchive();
                 }
                 else if(c == 'D' || c == 'd'){
-                    ServiceDeleteEmailSent(email_sent[selected_email_sent - 1].id);
+                    ServiceDeleteEmailSent(email_sent_archive[selected_email_sent - 1].id);
                     EmailSentArchive();
                 }
                 else if(c == '0' || c == KEY_BACKSPACE){
@@ -1220,7 +1354,217 @@ void EmailSentArchive() {
 
 }
 
-void PrintHeader(){
+void EmailWriteMail(){
+    PrintGmailHeader();
+
+
+    char temp[255];
+    int index = 0;
+    int reset_x_default_position = 20;
+    int default_position_x = 20;
+    int default_position_y = 10;
+    int inputan = 1;
+
+    vector<string> email_list;
+    vector<struct NewEmailSent> emails_sent;
+    vector<struct NewEmailInbox> emails_inbox;
+
+    SetCursorPosition(0,9);
+    cout << "Send Mail to Multiple Users by writing ',' between email. Email that is not registered will not be send";
+    SetCursorPosition(0,10);
+    cout << "Enter Email       : ";
+    SetCursorPosition(0,11);
+    cout << "Enter Subject     : ";
+    SetCursorPosition(0,12);
+    cout << "Enter Description : ";
+
+    while(1){
+        SetCursorVisible(false);
+        SetCursorPosition(0,7);
+        time_t tempTime;
+        time(&tempTime);
+        cout << ctime(&tempTime);
+
+
+        SetCursorVisible(true);
+        SetCursorPosition(default_position_x,default_position_y);
+        if(kbhit()){
+            temp[index] = getch();
+            if(temp[index] == 27){
+                EmailInboxDashboard();
+            }
+            if(temp[index] == KEY_ENTER){
+                if(index == 0){
+                    continue;
+				}
+
+                if(inputan == 1){
+                    temp[index] = '\0';
+
+                    string s(temp);
+
+                    string wordSeperate = "";
+                    for(auto ch : s){
+                        if(ch == ','){
+                            email_list.push_back(wordSeperate);
+                            wordSeperate = "";
+                        }
+                        else{
+                            wordSeperate += ch;
+                        }
+                    }
+
+                    if(wordSeperate != ""){
+                        email_list.push_back(wordSeperate);
+                    }
+
+                    if(email_list.size() == 0){
+                        SetCursorPosition(0,13);
+                        cout << "Email Not Valid";
+                        getchar();
+                        EmailWriteMail();
+                        break;
+                    }
+
+                    vector<struct Email> AllEmail = ServiceGetEmailAll();
+
+                    for(auto it : AllEmail){
+                        int erase_index = 0;
+                        for(auto tempStr : email_list){
+                            if(ToLower(tempStr) == ToLower(it.email)){
+                                struct NewEmailSent tempEmailSent;
+                                tempEmailSent.sender_email_id = login_now.id;
+                                tempEmailSent.available = 1;
+                                tempEmailSent.receiver_name = it.name;
+                                emails_sent.push_back(tempEmailSent);
+
+                                struct NewEmailInbox tempEmailInbox;
+                                tempEmailInbox.sender_name = login_now.name;
+                                tempEmailInbox.receiver_email_id = it.id;
+                                tempEmailInbox.available = 1;
+                                tempEmailInbox.read_status = 2;
+                                emails_inbox.push_back(tempEmailInbox);
+
+                                email_list.erase(email_list.begin() + erase_index);
+                                break;
+                            }
+                            erase_index++;
+                        }
+                    }
+
+                    inputan++;
+                    default_position_y++;
+                    default_position_x = reset_x_default_position;
+                    index = 0;
+                }
+                else if(inputan == 2){
+                    temp[index] = '\0';
+
+                    string s(temp);
+
+                    if(s == "0"){
+                        SetCursorPosition(0,13);
+                        cout << "Aborting Operation";
+                        getchar();
+                        EmailInboxDashboard();
+                        break;
+                    }
+
+                    int vector_len = emails_inbox.size();
+                    for(int i = 0; i < vector_len; i++){
+                        emails_inbox[i].subject = s;
+                        emails_sent[i].subject = s;
+                    }
+
+                    inputan++;
+                    default_position_y++;
+                    default_position_x = reset_x_default_position;
+                    index = 0;
+                }
+                else if(inputan == 3){
+                    temp[index] = '\0';
+
+                    string s(temp);
+
+                    int vector_len = emails_inbox.size();
+                    for(int i = 0; i < vector_len; i++){
+                        emails_inbox[i].description = s;
+                        emails_sent[i].description = s;
+                    }
+
+                    break;
+                }
+                continue;
+            }
+            if(temp[index] == 32){
+                if(inputan == 1){
+                    continue;
+                }
+				SetCursorPosition(default_position_x, default_position_y);
+
+				cout << " ";
+
+				index++;
+                default_position_x++;
+				continue;
+			}
+			if(temp[index] == 8){
+				if(index == 0){
+                    continue;
+				}
+				default_position_x--;
+				SetCursorPosition(default_position_x, default_position_y);
+				cout << " ";
+				index--;
+				continue;
+			}
+			if(((temp[index] >= 'A' && temp[index] <= 'Z') || (temp[index] >= 'a' && temp[index] <= 'z') || (temp[index] >= '0' && temp[index] <= '9') || temp[index] == '@' || temp[index] == '.' || temp[index] == ',' || temp[index] == '!' || temp[index] == '#' || temp[index] == '$' || temp[index] == '%'|| temp[index] == '^'|| temp[index] == '&' || temp[index] == '*' || temp[index] == '(' || temp[index] == ')' || temp[index] == '-' || temp[index] == '+' || temp[index] == '`' || temp[index] == '=' || temp[index] == '_') == 0 ){
+				continue;
+			}
+
+            SetCursorPosition(default_position_x, default_position_y);
+
+            cout << temp[index];
+
+		    index++;
+            default_position_x++;
+        }
+        Sleep(50);
+    }
+
+    int vector_len = emails_inbox.size();
+    string time_now = GetTimeNow();
+
+    int counter = 0;
+    for(int i = 0;  i < vector_len; i++){
+        emails_inbox[i].sent_at = time_now;
+        emails_sent[i].sent_at = time_now;
+
+        ServiceCreateEmailInbox(emails_inbox[i]);
+        ServiceCreateEmailSent(emails_sent[i]);
+        counter++;
+    }
+
+    SetCursorPosition(0,14);
+    cout << counter << " Emails Successfully Sent";
+
+    while(1){
+        SetCursorVisible(false);
+        SetCursorPosition(0,7);
+        time_t tempTime;
+        time(&tempTime);
+        cout << ctime(&tempTime);
+
+        if(kbhit()){
+            getchar();
+            EmailInboxDashboard();
+        }
+    }
+
+
+}
+
+void PrintGmailHeader(){
     system("@cls||clear");
 
     for(int i = 0; i < 7; i++){

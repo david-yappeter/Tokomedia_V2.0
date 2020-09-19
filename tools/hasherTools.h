@@ -9,6 +9,7 @@
 
 #include "cursorTools.h"
 #include "timeTools.h"
+#include "descriptionConverter.h"
 
 using namespace std;
 
